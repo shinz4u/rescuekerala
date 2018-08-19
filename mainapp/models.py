@@ -68,6 +68,7 @@ announcement_priorities = [
     ('L', 'Low')]
 
 
+
 class Request(models.Model):
     district = models.CharField(
         max_length = 15,
@@ -262,7 +263,6 @@ class DistrictCollection(models.Model):
         verbose_name_plural = 'District: Collections'
 
 class RescueCamp(models.Model):
-    verbose_name = 'Relief Camp'
     name = models.CharField(max_length=50,verbose_name="Camp Name - ക്യാമ്പിന്റെ പേര്")
     location = models.TextField(verbose_name="Address - അഡ്രസ്",blank=True,null=True)
     district = models.CharField(
@@ -272,6 +272,11 @@ class RescueCamp(models.Model):
     taluk = models.CharField(max_length=50,verbose_name="Taluk - താലൂക്ക്")
     village = models.CharField(max_length=50,verbose_name="Village - വില്ലജ്")
     contacts = models.TextField(verbose_name="Phone Numbers - ഫോൺ നമ്പറുകൾ",blank=True,null=True)
+    facilities_available = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Facilities Available (light, kitchen, toilets etc.) - ലഭ്യമായ സൗകര്യങ്ങൾ"
+    )
     data_entry_user = models.ForeignKey(User,models.SET_NULL,blank=True,null=True,help_text="This camp's coordinator page will be visible only to this user")
     map_link = models.CharField(max_length=250, verbose_name='Map link',blank=True,null=True,help_text="Copy and paste the full Google Maps link")
     latlng = models.CharField(max_length=100, verbose_name='GPS Coordinates', blank=True,help_text="Comma separated latlng field. Leave blank if you don't know it")
@@ -372,6 +377,33 @@ class Announcements(models.Model):
     class Meta:
         verbose_name = 'Announcement: News'
         verbose_name_plural = 'Announcements: News'
+
+    def __str__(self):
+        return self.description[:100]
+
+
+class ReliefCampData(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(blank=True, verbose_name="Details of requirements")
+    file = models.FileField(blank=True, upload_to='camp_data')
+    district = models.CharField(
+        max_length=15,
+        choices=districts,
+        verbose_name='District - ജില്ല',
+        null=True,
+        blank=True
+    )
+    tag = models.CharField(max_length=255, null=True, blank=True)
+    phone = models.CharField(
+        max_length=11,
+        verbose_name="Phone - ഫോണ്‍ നമ്പര്‍",
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        verbose_name = 'Relief: Camp Data'
+        verbose_name_plural = 'Relief: Camp Datas'
 
     def __str__(self):
         return self.description[:100]
